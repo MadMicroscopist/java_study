@@ -70,12 +70,13 @@ public class KotoServer{
         Socket sock;
 
         public void run() {
-
             String message;
             try {
                 while ((message = reader.readLine()) != null) {
                     messageList.append(message);
                     System.out.println("read " + message);
+                    Thread kotoSender = new Thread(new KotoSender(sock, message));
+                    kotoSender.start();
                 } // close while
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -83,7 +84,7 @@ public class KotoServer{
         }
 
         public KotoMessenger(Socket clientSocket) {
-            System.out.println("I'm alive!");
+            //System.out.println("I'm alive!");
             try {
                 sock = clientSocket;
                 InputStreamReader isReader = new InputStreamReader(sock.getInputStream());
@@ -94,5 +95,28 @@ public class KotoServer{
         } // close constructor
 
 
+    }
+
+    public class KotoSender implements Runnable {
+        String mess;
+        Socket sock;
+        public KotoSender (Socket clientSocket, String message) {
+            try {
+                sock = clientSocket;
+                mess = message;
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        } //end of constructor
+
+        public void run() {
+            try {
+                PrintWriter writer = new PrintWriter(sock.getOutputStream());
+                writer.println(mess);
+                writer.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

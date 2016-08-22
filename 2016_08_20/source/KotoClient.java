@@ -58,6 +58,25 @@ public class KotoClient {
             window.setSize(500,600);
             window.setVisible(true);
 
+        Thread listener = new Thread(new kotoListener());
+        listener.start();
+    }
+
+    public class kotoListener implements Runnable {
+        public void run() {
+            String message = null;
+            BufferedReader reader;
+            try {
+                InputStreamReader isReader = new InputStreamReader(kotoSocket.getInputStream());
+                reader = new BufferedReader(isReader);
+                while ((message = reader.readLine()) != null) {
+                    messageList.append(message);
+                    System.out.println("read " + message);
+                } // close while
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     public class sendButtonListener implements ActionListener {
