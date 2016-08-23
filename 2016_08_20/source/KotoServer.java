@@ -3,49 +3,15 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.*;
+//import javax.swing.*;
 
 public class KotoServer{
-    Socket kotoSocket;
-    JFrame window;
-    JButton sendButton;
-    JPanel mainSpace;
-    JTextArea messageList;
-    JTextArea messageText;
+    //Socket kotoSocket;
     public static void main(String[] args) {
         new KotoServer().go();
     }
     public void go() {
-        window = new JFrame("Kot-Server");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        messageText = new JTextArea(1, 20);
-        messageText.setLineWrap(true);
-            messageText.setWrapStyleWord(true);
-
-            JScrollPane messageTextScroller = new JScrollPane(messageText);
-            messageTextScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            messageTextScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        messageList = new JTextArea(10, 20);
-        messageList.setLineWrap(true);
-            messageList.setWrapStyleWord(true);
-
-            JScrollPane messageListScroller = new JScrollPane(messageList);
-            messageListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            messageListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        sendButton = new JButton("Send");
-        sendButton.addActionListener(new sendButtonListener());
-
-        mainSpace = new JPanel();
-            mainSpace.add(messageListScroller);
-            mainSpace.add(messageTextScroller);
-            mainSpace.add(sendButton);
-
-        window.getContentPane().add(BorderLayout.CENTER, mainSpace);
-            window.setSize(500,600);
-            window.setVisible(true);
         try{
             ServerSocket serverSock = new ServerSocket(6666);
             while(true) {
@@ -60,23 +26,17 @@ public class KotoServer{
         }
     }
 
-    public class sendButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent ev) {
-        }
-    }
-
     public class KotoMessenger implements Runnable {
         BufferedReader reader;
         Socket sock;
+        InputStreamReader isReader;
 
         public void run() {
-            String message;
+            String message = null;
             try {
                 while ((message = reader.readLine()) != null) {
-                    messageList.append(message);
                     System.out.println("read " + message);
-                    Thread kotoSender = new Thread(new KotoSender(sock, message));
-                    kotoSender.start();
+                    KotoSender(sock, message);
                 } // close while
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -87,34 +47,21 @@ public class KotoServer{
             //System.out.println("I'm alive!");
             try {
                 sock = clientSocket;
-                InputStreamReader isReader = new InputStreamReader(sock.getInputStream());
+                isReader = new InputStreamReader(sock.getInputStream());
                 reader = new BufferedReader(isReader);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
         } // close constructor
 
-
-    }
-
-    public class KotoSender implements Runnable {
-        String mess;
-        Socket sock;
-        public KotoSender (Socket clientSocket, String message) {
+        public void KotoSender (Socket clientSocket, String message) {
             try {
-                sock = clientSocket;
-                mess = message;
-            } catch(Exception ex) {
-                ex.printStackTrace();
-            }
-        } //end of constructor
-
-        public void run() {
-            try {
-                PrintWriter writer = new PrintWriter(sock.getOutputStream());
+                //Socket sock = clientSocket;
+                String mess = message;
+                PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 writer.println(mess);
                 writer.close();
-            } catch (Exception ex) {
+            } catch(Exception ex) {
                 ex.printStackTrace();
             }
         }
