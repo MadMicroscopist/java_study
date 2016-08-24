@@ -41,13 +41,15 @@ public class KotoClientConsole {
         } //close conctructor
         public void run() {
             try {
-                kotPisaka.write("Ping me, pls");
+                kotPisaka.write("Ping me, pls \n");
+                kotPisaka.flush();
                 InputStreamReader isKot = new InputStreamReader(kotClientSocket.getInputStream());
                 BufferedReader kotChitacka = new BufferedReader(isKot);
                 String message = null;
                 while( (message=kotChitacka.readLine() )!=null){
                     System.out.println(message);
                 }
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

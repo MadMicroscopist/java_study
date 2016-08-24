@@ -21,7 +21,8 @@ public class KotoServerConsole {
                 System.out.println("got a connection");
                 OutputStreamWriter osKot = new OutputStreamWriter(kotClientSocket.getOutputStream());
                 BufferedWriter kotPisaka = new BufferedWriter(osKot);
-                kotPisaka.write("Hello, %username!");
+                kotPisaka.write("Hello, %username! \n");
+                kotPisaka.flush();
             } //close while loop
         } catch(Exception ex) {
             ex.printStackTrace();
